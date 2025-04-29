@@ -118,7 +118,7 @@
                 <version>3.21.0</version>
                 <configuration>
                     <rulesets>
-                        <ruleset>/mnt/c/Maple/Teedy/rules.xml</ruleset>
+                        <ruleset>C:/Maple/Teedy/rules.xml</ruleset>
                     </rulesets>
                 </configuration>
             </plugin>
@@ -185,7 +185,7 @@
                 <version>3.21.0</version>
                 <configuration>
                     <rulesets>
-                        <ruleset>/mnt/c/Maple/Teedy/rules.xml</ruleset>
+                        <ruleset>C:/Maple/Teedy/rules.xml</ruleset>
                     </rulesets>
                     <failOnViolation>false</failOnViolation> <!-- 设为true会使构建失败 -->
                     <includeTests>true</includeTests>
