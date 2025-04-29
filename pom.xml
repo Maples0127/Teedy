@@ -185,7 +185,7 @@
                 <version>3.21.0</version>
                 <configuration>
                     <rulesets>
-                        <ruleset>${project.basedir}/rules.xml</ruleset>
+                        <ruleset>${project.basedir}\rules.xml</ruleset>
                     </rulesets>
                     <failOnViolation>false</failOnViolation> <!-- 设为true会使构建失败 -->
                     <includeTests>true</includeTests>
