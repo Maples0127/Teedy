@@ -3,42 +3,42 @@ agent any
 stages {
 stage('Clean') {
 steps {
-bat 'mvn clean'
+sh 'mvn clean'
 }
 }
 stage('Compile') {
 steps {
-bat 'mvn compile'
+sh 'mvn compile'
 }
 }
 stage('Test') {
 steps {
-bat 'mvn test -Dmaven.test.failure.ignore=true'
+sh 'mvn test -Dmaven.test.failure.ignore=true'
 }
 }
 stage('PMD') {
 steps {
-bat 'mvn pmd:pmd'
+sh 'mvn pmd:pmd'
 }
 }
 stage('JaCoCo') {
 steps {
-bat 'mvn jacoco:report'
+sh 'mvn jacoco:report'
 }
 }
 stage('Javadoc') {
 steps {
-bat 'mvn javadoc:javadoc'
+sh 'mvn javadoc:javadoc'
 }
 }
 stage('Site') {
 steps {
-bat 'mvn site'
+sh 'mvn site'
 }
 }
 stage('Package') {
 steps {
-bat 'mvn package -DskipTests'
+sh 'mvn package -DskipTests'
 }
 }
 }
