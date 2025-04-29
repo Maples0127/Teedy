@@ -12,7 +12,7 @@
 
 
   <properties>
-    <pmd.ruleset.location>C:/Maple/Teedy/rules.xml</pmd.ruleset.location>
+    <pmd.ruleset.location>/mnt/c/Maple/Teedy/rules.xml</pmd.ruleset.location>
   </properties>
 
   <modelVersion>4.0.0</modelVersion>
