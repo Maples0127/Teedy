@@ -2,12 +2,13 @@ package com.sismics.docs.core.dao.dto;
 
 import com.google.common.base.MoreObjects;
 
-public class UserRequestDto {
+public class UserRegistrationDto {
     private String id;
     private String username;
     private String email;
     private Long createTimestamp;
     private String status;
+    private Long disableTimestamp;
 
 
     public String getId() {
@@ -57,5 +58,13 @@ public class UserRequestDto {
                 .add("username", username)
                 .add("email", email)
                 .toString();
+    }
+
+    public Long getDisableTimestamp() {
+        return disableTimestamp;
+    }
+
+    public void setDisableTimestamp(Long disableTimestamp) {
+        this.disableTimestamp = disableTimestamp;
     }
 }

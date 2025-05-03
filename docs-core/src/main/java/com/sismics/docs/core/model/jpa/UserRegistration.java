@@ -10,25 +10,7 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "T_USER_REQUEST")
-public class UserRequest implements Loggable {
-
-
-    public Date getDeleteDate() {
-        return deleteDate;
-    }
-
-    public void setDeleteDate(Date deleteDate) {
-        this.deleteDate = deleteDate;
-    }
-
-    public Date getDisableDate() {
-        return disableDate;
-    }
-
-    public void setDisableDate(Date disableDate) {
-        this.disableDate = disableDate;
-    }
-
+public class UserRegistration implements Loggable {
     public enum Status {
         PENDING,  // 待审批状态（对应初始空值）
         ACCEPTED, // 审批通过（对应您提到的 1）
@@ -47,6 +29,9 @@ public class UserRequest implements Loggable {
 
     @Column(name = "URQ_EMAIL_C", length = 100)
     private String email;
+
+    @Column(name = "URQ_STORAGEQUOTA_N", nullable = false)
+    private Long storageQuota;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "URQ_STATUS_C", nullable = false, length = 20)
@@ -67,7 +52,7 @@ public class UserRequest implements Loggable {
         return id;
     }
 
-    public UserRequest setId(String id) {
+    public UserRegistration setId(String id) {
         this.id = id;
         return this;
     }
@@ -76,7 +61,7 @@ public class UserRequest implements Loggable {
         return username;
     }
 
-    public UserRequest setUsername(String username) {
+    public UserRegistration setUsername(String username) {
         this.username = username;
         return this;
     }
@@ -85,7 +70,7 @@ public class UserRequest implements Loggable {
         return password;
     }
 
-    public UserRequest setPassword(String password) {
+    public UserRegistration setPassword(String password) {
         this.password = password;
         return this;
     }
@@ -94,7 +79,7 @@ public class UserRequest implements Loggable {
         return email;
     }
 
-    public UserRequest setEmail(String email) {
+    public UserRegistration setEmail(String email) {
         this.email = email;
         return this;
     }
@@ -103,7 +88,7 @@ public class UserRequest implements Loggable {
         return status;
     }
 
-    public UserRequest setStatus(Status status) {
+    public UserRegistration setStatus(Status status) {
         this.status = status;
         return this;
     }
@@ -112,9 +97,34 @@ public class UserRequest implements Loggable {
         return createDate;
     }
 
-    public UserRequest setCreateDate(Date createDate) {
+    public UserRegistration setCreateDate(Date createDate) {
         this.createDate = createDate;
         return this;
+    }
+
+
+    public Date getDeleteDate() {
+        return deleteDate;
+    }
+
+    public void setDeleteDate(Date deleteDate) {
+        this.deleteDate = deleteDate;
+    }
+
+    public Date getDisableDate() {
+        return disableDate;
+    }
+
+    public void setDisableDate(Date disableDate) {
+        this.disableDate = disableDate;
+    }
+
+    public Long getStorageQuota() {
+        return storageQuota;
+    }
+
+    public void setStorageQuota(Long storageQuota) {
+        this.storageQuota = storageQuota;
     }
     // endregion
 
