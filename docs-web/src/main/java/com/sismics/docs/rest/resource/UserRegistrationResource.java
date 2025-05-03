@@ -1,11 +1,7 @@
 package com.sismics.docs.rest.resource;
 
-//import com.sismics.docs.core.dao.UserRegistrationRequestDao;
-//import com.sismics.docs.core.model.jpa.UserRegistrationRequest;
-
 import com.sismics.docs.core.constant.Constants;
-import com.sismics.docs.core.dao.UserDao;
-import com.sismics.docs.core.dao.UserRegistrationDao;
+import com.sismics.docs.core.dao.*;
 import com.sismics.docs.core.dao.criteria.UserRegistrationCriteria;
 import com.sismics.docs.core.dao.dto.UserRegistrationDto;
 import com.sismics.docs.core.model.jpa.User;
@@ -21,23 +17,36 @@ import jakarta.json.JsonObjectBuilder;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
 @Path("/registration")
 public class UserRegistrationResource extends BaseResource {
 
-    @POST
+    /**
+     * Create a user.
+     *
+     * @param username UserRegistrationName
+     * @param password RegistrationPassword
+     * @param email Email
+     * @param storageQuotaStr
+     * @return
+     * @throws Exception
+     * @api {put} /registration
+     */
+    @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response submitRequest(
             @FormParam("username") String username,
             @FormParam("password") String password,
             @FormParam("email") String email,
             @FormParam("storage_quota") String storageQuotaStr) throws Exception {
+
+        // 判断是否为guest创建
         if (!authenticate() || !principal.isGuest()) {
             throw new ForbiddenClientException();
         }
-
 
         // Validate input data
         username = ValidationUtil.validateLength(username, "username", 3, 50);
@@ -53,9 +62,9 @@ public class UserRegistrationResource extends BaseResource {
         registration.setPassword(password);
         registration.setEmail(email);
         registration.setStorageQuota(storageQuota);
+        registration.setStatus(UserRegistration.Status.PENDING);
 
         UserRegistrationDao registrationDao = new UserRegistrationDao();
-//        String registrationId = registrationDao.create(registration);
         try {
             registrationDao.create(registration);
         } catch (Exception e) {
@@ -65,7 +74,6 @@ public class UserRegistrationResource extends BaseResource {
                 throw new ServerException("UnknownError", "Unknown server error", e);
             }
         }
-
 
         // Always return OK
         JsonObjectBuilder response = Json.createObjectBuilder()
@@ -83,17 +91,15 @@ public class UserRegistrationResource extends BaseResource {
         JsonArrayBuilder userRequests = Json.createArrayBuilder();
 //        SortCriteria sortCriteria = new SortCriteria(sortColumn, asc);
 
-        UserRegistrationDao requestDao = new UserRegistrationDao();
-        List<UserRegistrationDto> requests = requestDao.findByCriteria(new UserRegistrationCriteria(), null);
-
-
+        UserRegistrationDao registrationDao = new UserRegistrationDao();
+        List<UserRegistrationDto> requests = registrationDao.findByCriteria(new UserRegistrationCriteria(), null);
         for (UserRegistrationDto userRegistrationDto : requests) {
             userRequests.add(Json.createObjectBuilder()
                     .add("id", userRegistrationDto.getId())
                     .add("username", userRegistrationDto.getUsername())
                     .add("email", userRegistrationDto.getEmail())
 //                    .add("totp_enabled", userRequestDto.getTotpKey() != null)
-//                    .add("storage_quota", userRequestDto.getStorageQuota())
+                    .add("storage_quota", userRegistrationDto.getStorageQuota())
 //                    .add("storage_current", userRequestDto.getStorageCurrent())
                     .add("create_date", userRegistrationDto.getCreateTimestamp())
                     .add("disabled", userRegistrationDto.getDisableTimestamp() != null));
@@ -104,8 +110,6 @@ public class UserRegistrationResource extends BaseResource {
                 .add("userRequests", userRequests);
         return Response.ok().entity(response.build()).build();
     }
-
-
 
 
     @POST
@@ -160,8 +164,84 @@ public class UserRegistrationResource extends BaseResource {
                 registration.setStatus(UserRegistration.Status.REJECTED);
             }
         }
+//        registration = registrationDao.update(registration,principal.getId());
+
+
+        // Always return OK
+        JsonObjectBuilder response = Json.createObjectBuilder()
+                .add("status", "ok");
+        return Response.ok().entity(response.build()).build();
+    }
+
+
+    @POST
+    @Path("/resubmit/{username: [a-zA-Z0-9_@.-]+}")
+    public Response resubmitRequest(
+            @PathParam("username") String userRegistrationName,
+            @FormParam("password") String password,
+            @FormParam("email") String email,
+            @FormParam("storage_quota") String storageQuotaStr
+    ){
+        if (!authenticate() || !hasBaseFunction(BaseFunction.ADMIN)) {
+            throw new ForbiddenClientException();
+        }
+
+        // Validate the input data
+        userRegistrationName = ValidationUtil.validateLength(userRegistrationName, "username", 3, 50);
+        ValidationUtil.validateUsername(userRegistrationName, "username");
+        password = ValidationUtil.validateLength(password, "password", 8, 50);
+        email = ValidationUtil.validateLength(email, "email", 1, 100);
+//        Long storageQuota = ValidationUtil.validateLong(storageQuotaStr, "storage_quota");
+        ValidationUtil.validateEmail(email, "email");
+
+        // Check if the userRegistration exists
+        UserRegistrationDao registrationDao = new UserRegistrationDao();
+        UserRegistration registration = registrationDao.getUserRegistrationByURN(userRegistrationName);
+        if (registration == null) {
+            throw new ClientException("RequestNotFound", "Registration request not found");
+        }
+
+        // Update the user
+        registration.setStatus(UserRegistration.Status.PENDING);
+        if (email != null) {
+            registration.setEmail(email);
+        }
+        if (StringUtils.isNotBlank(storageQuotaStr)) {
+            Long storageQuota = ValidationUtil.validateLong(storageQuotaStr, "storage_quota");
+            registration.setStorageQuota(storageQuota);
+        }
         registration = registrationDao.update(registration,principal.getId());
 
+        // Change the password
+        if (StringUtils.isNotBlank(password)) {
+            registration.setPassword(password);
+            registrationDao.updatePassword(registration, principal.getId());
+        }
+
+        // Always return OK
+        JsonObjectBuilder response = Json.createObjectBuilder()
+                .add("status", "ok");
+        return Response.ok().entity(response.build()).build();
+    }
+
+
+    @DELETE
+    @Path("/delete/{username: [a-zA-Z0-9_@.-]+}")
+    public Response delete(@PathParam("username") String username) {
+        if (!authenticate()) {
+            throw new ForbiddenClientException();
+        }
+        checkBaseFunction(BaseFunction.ADMIN);
+
+        // Check that the user exists
+        UserRegistrationDao userRegistrationDao = new UserRegistrationDao();
+        UserRegistration userRegistration = userRegistrationDao.getUserRegistrationByURN(username);
+        if (userRegistration == null) {
+            throw new ClientException("UserNotFound", "The user does not exist");
+        }
+
+        // Delete the user
+        userRegistrationDao.delete(userRegistration.getUsername(), principal.getId());
 
         // Always return OK
         JsonObjectBuilder response = Json.createObjectBuilder()

@@ -9,7 +9,7 @@ public class UserRegistrationDto {
     private Long createTimestamp;
     private String status;
     private Long disableTimestamp;
-
+    private Long storageQuota;
 
     public String getId() {
         return id;
@@ -66,5 +66,13 @@ public class UserRegistrationDto {
 
     public void setDisableTimestamp(Long disableTimestamp) {
         this.disableTimestamp = disableTimestamp;
+    }
+
+    public Long getStorageQuota() {
+        return storageQuota;
+    }
+
+    public void setStorageQuota(Long storageQuota) {
+        this.storageQuota = storageQuota;
     }
 }
