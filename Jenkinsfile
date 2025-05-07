@@ -39,14 +39,12 @@ pipeline {
                 script {
                     // sign in Docker Hub
                     docker.withRegistry('https://registry.hub.docker.com',
-                    'DOCKER_HUB_CREDENTIALS') {
-                    // push image
+                    'dockerhub_credentials') {
+                        // push image
+                        docker.image("${env.DOCKER_IMAGE}:${env.DOCKER_TAG}").push()
 
-                    docker.image("${env.DOCKER_IMAGE}:${env.DOCKER_TAG}").push()
-
-                    // ：optional: label latest
-
-                    docker.image("${env.DOCKER_IMAGE}:${env.DOCKER_TAG}").push('latest')
+                        // ：optional: label latest
+                        docker.image("${env.DOCKER_IMAGE}:${env.DOCKER_TAG}").push('latest')
                     }
                 }
             }
@@ -56,16 +54,17 @@ pipeline {
         stage('Run containers') {
             steps {
                 script {
-                // stop then remove containers if exists
-                sh 'docker stop teedy-container-8081 || true'
-                sh 'docker rm teedy-container-8081 || true'
-                // run Container
-                docker.image("${env.DOCKER_IMAGE}:${env.DOCKER_TAG}").run(
-                    '--name teedy-container-8081 -d -p 8081:8080'
-                )
-                // Optional: list all teedy-containers
-                sh 'docker ps --filter "name=teedy-container"'
+                    // stop then remove containers if exists
+                    sh 'docker stop teedy-container-8081 || true'
+                    sh 'docker rm teedy-container-8081 || true'
 
+                    // run Container
+                    docker.image("${env.DOCKER_IMAGE}:${env.DOCKER_TAG}").run(
+                        '--name teedy-container-8081 -d -p 8081:8080'
+                    )
+
+                    // Optional: list all teedy-containers
+                    sh 'docker ps --filter "name=teedy-container"'
                 }
             }
         }
