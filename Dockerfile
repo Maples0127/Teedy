@@ -1,7 +1,6 @@
 # Using a custom image that already includes Ubuntu 22.04
 FROM ubuntu:22.04
-# Using the LABEL instruction to add metadata to the image,sets the maintainer's
-email #address for the image
+# Using the LABEL instruction to add metadata to the image,sets the maintainer's email #address for the image
 LABEL maintainer="b.gamard@sismics.com"
 # Run Debian in non interactive mode
 ENV DEBIAN_FRONTEND noninteractive
@@ -18,9 +17,11 @@ RUN apt-get update && \
  apt-get -y -q --no-install-recommends install \
  vim less procps unzip wget tzdata openjdk-11-jdk \
  ffmpeg \
-mediainfo \
- tesseract-ocr \
- tesseract-ocr-ara \
+ mediainfo \
+ tesseract-ocr tesseract-ocr \
+   tesseract-ocr-ara \
+
+
  tesseract-ocr-ces \
  tesseract-ocr-chi-sim \
  tesseract-ocr-chi-tra \
@@ -52,7 +53,7 @@ mediainfo \
 RUN dpkg-reconfigure -f noninteractive tzdata
 # Install Jetty server
 RUN wget -nv -O /tmp/jetty.tar.gz \
- "https://repo1.maven.org/maven2/org/eclipse/jetty/jettyhome/${JETTY_VERSION}/jetty-home-${JETTY_VERSION}.tar.gz" \
+ "https://repo1.maven.org/maven2/org/eclipse/jetty/jetty-home/${JETTY_VERSION}/jetty-home-${JETTY_VERSION}.tar.gz" \
  && tar xzf /tmp/jetty.tar.gz -C /opt \
  && mv /opt/jetty* /opt/jetty \
  && useradd jetty -U -s /bin/false \
@@ -65,16 +66,11 @@ EXPOSE 8080
 RUN mkdir /app && \
  cd /app && \
  java -jar /opt/jetty/start.jar --add-modules=server,http,webapp,deploy
-# Add the local file docs.xml and the built WAR file docs-web-*.war to the
-container's Jetty web applications directory.Allows Jetty to load these web
-applications at startup.
+# Add the local file docs.xml and the built WAR file docs-web-*.war to the container's Jetty web applications directory.Allows Jetty to load these web applications at startup.
 ADD docs.xml /app/webapps/docs.xml
 ADD docs-web/target/docs-web-*.war /app/webapps/docs.war
-# sets the working directory for any RUN, CMD, ENTRYPOINT, COPY, and ADD
-instructions that follow it
+# sets the working directory for any RUN, CMD, ENTRYPOINT, COPY, and ADD instructions that follow it
 WORKDIR /app
-# sets the default command that will run when a container is started from the
-image.
-# Here it tells the container to run the Jetty web server by executing the
-start.jar file with Java
+# sets the default command that will run when a container is started from the image.
+# Here it tells the container to run the Jetty web server by executing the start.jar file with Java
 CMD ["java", "-jar", "/opt/jetty/start.jar"]
