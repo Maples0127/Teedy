@@ -3,7 +3,6 @@ package com.sismics.docs.core.dao;
 import com.sismics.docs.core.constant.AuditLogType;
 import com.sismics.docs.core.dao.criteria.UserRegistrationCriteria;
 import com.sismics.docs.core.dao.dto.UserRegistrationDto;
-import com.sismics.docs.core.model.jpa.User;
 import com.sismics.docs.core.model.jpa.UserRegistration;
 import com.sismics.docs.core.util.AuditLogUtil;
 import com.sismics.docs.core.util.jpa.QueryParam;
@@ -43,7 +42,7 @@ public class UserRegistrationDao {
         userRegistration.setCreateDate(new Date());
 //        userRegistration.setPassword(userRegistration.getPassword());
 //        userRegistration.setStorageCurrent(0L);
-        userRegistration.setStatus(UserRegistration.Status.PENDING);
+        userRegistration.setStatus("pending");
 
         em.persist(userRegistration);
         return userRegistration.getId();
@@ -137,11 +136,11 @@ public class UserRegistrationDao {
     /**
      * 更新请求状态（仿照UserDao.update()）
      */
-    public UserRegistration updateStatus(UserRegistration userRegistration, UserRegistration.Status status) {
+    public UserRegistration updateStatus(UserRegistration userRegistration, String status) {
         EntityManager em = ThreadLocalContext.get().getEntityManager();
 
         Query q = em.createQuery("select ur from UserRegistration ur where ur.username = :username and ur.deleteDate is null");
-        q.setParameter("id", userRegistration.getId());
+        q.setParameter("username", userRegistration.getUsername());
         UserRegistration userRegistrationDb = (UserRegistration) q.getSingleResult();
 
         userRegistrationDb.setStatus(status);
@@ -152,7 +151,7 @@ public class UserRegistrationDao {
     public UserRegistration getUserRegistrationByURN(String userRegistrationName) {
         EntityManager em = ThreadLocalContext.get().getEntityManager();
         try {
-            Query q = em.createQuery("select ur from UserRegistration ur where ur.username = :username and u.deleteDate is null");
+            Query q = em.createQuery("select ur from UserRegistration ur where ur.username = :username and ur.deleteDate is null");
             q.setParameter("username", userRegistrationName);
             return (UserRegistration) q.getSingleResult();
         } catch (NoResultException e) {

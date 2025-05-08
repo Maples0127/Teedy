@@ -27,13 +27,14 @@ public class UserRegistrationResource extends BaseResource {
     /**
      * Create a user.
      *
-     * @param username UserRegistrationName
-     * @param password RegistrationPassword
-     * @param email Email
-     * @param storageQuotaStr
-     * @return
-     * @throws Exception
      * @api {put} /registration
+     *
+     * @param username User's registration name
+     * @param password Registration Password
+     * @param email E-Mail
+     * @param storageQuotaStr User's storage quota
+     * @return Response
+     *
      */
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -41,7 +42,7 @@ public class UserRegistrationResource extends BaseResource {
             @FormParam("username") String username,
             @FormParam("password") String password,
             @FormParam("email") String email,
-            @FormParam("storage_quota") String storageQuotaStr) throws Exception {
+            @FormParam("storage_quota") String storageQuotaStr){
 
         // 判断是否为guest创建
         if (!authenticate() || !principal.isGuest()) {
@@ -62,7 +63,7 @@ public class UserRegistrationResource extends BaseResource {
         registration.setPassword(password);
         registration.setEmail(email);
         registration.setStorageQuota(storageQuota);
-        registration.setStatus(UserRegistration.Status.PENDING);
+        registration.setStatus("pending");
 
         UserRegistrationDao registrationDao = new UserRegistrationDao();
         try {
@@ -144,7 +145,7 @@ public class UserRegistrationResource extends BaseResource {
         if (approve != null) {
             if (approve) {
 
-                registration.setStatus(UserRegistration.Status.ACCEPTED);
+                registration.setStatus("accept");
                 // Create the actual user
                 User user = new User();
                 user.setRoleId(Constants.DEFAULT_USER_ROLE);
@@ -161,7 +162,7 @@ public class UserRegistrationResource extends BaseResource {
                     throw new ClientException("RegistrationError", "Error creating user");
                 }
             } else {
-                registration.setStatus(UserRegistration.Status.REJECTED);
+                registration.setStatus("reject");
             }
         }
 //        registration = registrationDao.update(registration,principal.getId());
@@ -202,7 +203,7 @@ public class UserRegistrationResource extends BaseResource {
         }
 
         // Update the user
-        registration.setStatus(UserRegistration.Status.PENDING);
+        registration.setStatus("pending");
         if (email != null) {
             registration.setEmail(email);
         }

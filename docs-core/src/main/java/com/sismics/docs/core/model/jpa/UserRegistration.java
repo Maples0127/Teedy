@@ -9,14 +9,8 @@ import java.util.Date;
  * User registration request entity.
  */
 @Entity
-@Table(name = "T_USER_REQUEST")
+@Table(name = "T_USER_REGISTRATION")
 public class UserRegistration implements Loggable {
-    public enum Status {
-        PENDING,  // 待审批状态（对应初始空值）
-        ACCEPTED, // 审批通过（对应您提到的 1）
-        REJECTED  // 审批拒绝（对应您提到的 0）
-    }
-
     @Id
     @Column(name = "URQ_ID_C", length = 36)
     private String id;
@@ -35,7 +29,7 @@ public class UserRegistration implements Loggable {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "URQ_STATUS_C", nullable = false, length = 20)
-    private Status status = Status.PENDING;
+    private String status = "pending";
 
     @Column(name = "URQ_CREATEDATE_D", nullable = false)
 //    @Temporal(TemporalType.TIMESTAMP)
@@ -84,11 +78,11 @@ public class UserRegistration implements Loggable {
         return this;
     }
 
-    public Status getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public UserRegistration setStatus(Status status) {
+    public UserRegistration setStatus(String status) {
         this.status = status;
         return this;
     }
