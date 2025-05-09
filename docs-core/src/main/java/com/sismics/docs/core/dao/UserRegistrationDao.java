@@ -2,7 +2,6 @@ package com.sismics.docs.core.dao;
 
 import com.sismics.docs.core.constant.AuditLogType;
 import com.sismics.docs.core.dao.criteria.UserRegistrationCriteria;
-import com.sismics.docs.core.dao.dto.UserRegistrationDto;
 import com.sismics.docs.core.model.jpa.UserRegistration;
 import com.sismics.docs.core.util.AuditLogUtil;
 import com.sismics.docs.core.util.jpa.QueryParam;
@@ -76,7 +75,7 @@ public class UserRegistrationDao {
     /**
      * 根据条件查询请求（仿照UserDao.findByCriteria()）
      */
-    public List<UserRegistrationDto> findByCriteria(UserRegistrationCriteria criteria, SortCriteria sortCriteria) {
+    public List<UserRegistration> findByCriteria(UserRegistrationCriteria criteria, SortCriteria sortCriteria) {
         Map<String, Object> parameterMap = new HashMap<>();
         List<String> criteriaList = new ArrayList<>();
 
@@ -91,10 +90,6 @@ public class UserRegistrationDao {
             criteriaList.add("ur.URQ_USERNAME_C = :username");
             parameterMap.put("username", criteria.getUserName());
         }
-//        if (criteria.getEmail() != null) {
-//            criteriaList.add("ur.URQ_EMAIL_C = :email");
-//            parameterMap.put("email", criteria.getEmail());
-//        }
         if (criteria.getStatus() != null) {
             criteriaList.add("ur.URQ_STATUS_C = :status");
             parameterMap.put("status", criteria.getStatus());
@@ -113,24 +108,23 @@ public class UserRegistrationDao {
         QueryParam queryParam = QueryUtil.getSortedQueryParam(new QueryParam(sb.toString(), parameterMap), sortCriteria);
 
         // 执行查询
-        EntityManager em = ThreadLocalContext.get().getEntityManager();
-        Query query = QueryUtil.getNativeQuery(queryParam);
+//        EntityManager em = ThreadLocalContext.get().getEntityManager();
         @SuppressWarnings("unchecked")
-        List<Object[]> resultList = query.getResultList();
+        List<Object[]> resultList = QueryUtil.getNativeQuery(queryParam).getResultList();
 
         // 转换为DTO列表
-        List<UserRegistrationDto> dtoList = new ArrayList<>();
+        List<UserRegistration> urList = new ArrayList<>();
         for (Object[] o : resultList) {
             int i = 0;
-            UserRegistrationDto dto = new UserRegistrationDto();
-            dto.setId((String) o[i++]);
-            dto.setUsername((String) o[i++]);
-            dto.setEmail((String) o[i++]);
-            dto.setCreateTimestamp(((Timestamp) o[i++]).getTime());
-            dto.setStatus((String) o[i++]);
-            dtoList.add(dto);
+            UserRegistration userRegistration = new UserRegistration();
+            userRegistration.setId((String) o[i++]);
+            userRegistration.setUsername((String) o[i++]);
+            userRegistration.setEmail((String) o[i++]);
+            userRegistration.setCreateDate(((Date) o[i++]));
+            userRegistration.setStatus((String) o[i++]);
+            urList.add(userRegistration);
         }
-        return dtoList;
+        return urList;
     }
 
     /**
@@ -185,7 +179,7 @@ public class UserRegistrationDao {
 
         // Update the user (except password)
         userRegistrationDb.setEmail(registration.getEmail());
-        userRegistrationDb.setStorageQuota(registration.getStorageQuota());
+//        userRegistrationDb.setStorageQuota(registration.getStorageQuota());
 //        userDb.setStorageCurrent(registration.getStorageCurrent());
 //        userDb.setTotpKey(registration.getTotpKey());
         userRegistrationDb.setDisableDate(registration.getDisableDate());
@@ -196,20 +190,20 @@ public class UserRegistrationDao {
         return registration;
     }
 
-    public UserRegistration updatePassword(UserRegistration registration, String id) {
-        EntityManager em = ThreadLocalContext.get().getEntityManager();
-
-        // Get the user
-        Query q = em.createQuery("select u from User u where u.id = :id and u.deleteDate is null");
-        q.setParameter("id", registration.getId());
-        UserRegistration userRegistrationDb = (UserRegistration) q.getSingleResult();
-
-        // Update the user
-        userRegistrationDb.setPassword(registration.getPassword());
-
-        // Create audit log
-        AuditLogUtil.create(userRegistrationDb, AuditLogType.UPDATE, id);
-
-        return registration;
-    }
+//    public UserRegistration updatePassword(UserRegistration registration, String id) {
+//        EntityManager em = ThreadLocalContext.get().getEntityManager();
+//
+//        // Get the user
+//        Query q = em.createQuery("select u from User u where u.id = :id and u.deleteDate is null");
+//        q.setParameter("id", registration.getId());
+//        UserRegistration userRegistrationDb = (UserRegistration) q.getSingleResult();
+//
+//        // Update the user
+//        userRegistrationDb.setPassword(registration.getPassword());
+//
+//        // Create audit log
+//        AuditLogUtil.create(userRegistrationDb, AuditLogType.UPDATE, id);
+//
+//        return registration;
+//    }
 }

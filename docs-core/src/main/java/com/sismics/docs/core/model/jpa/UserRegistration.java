@@ -18,14 +18,14 @@ public class UserRegistration implements Loggable {
     @Column(name = "URQ_USERNAME_C", nullable = false, length = 50, unique = true)
     private String username;
 
-    @Column(name = "URQ_PASSWORD_C", nullable = false, length = 100)
-    private String password;
+//    @Column(name = "URQ_PASSWORD_C", nullable = false, length = 100)
+//    private String password;
 
     @Column(name = "URQ_EMAIL_C", length = 100)
     private String email;
 
-    @Column(name = "URQ_STORAGEQUOTA_N", nullable = false)
-    private Long storageQuota;
+//    @Column(name = "URQ_STORAGEQUOTA_N", nullable = false)
+//    private Long storageQuota;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "URQ_STATUS_C", nullable = false, length = 20)
@@ -60,14 +60,14 @@ public class UserRegistration implements Loggable {
         return this;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public UserRegistration setPassword(String password) {
-        this.password = password;
-        return this;
-    }
+//    public String getPassword() {
+//        return password;
+//    }
+//
+//    public UserRegistration setPassword(String password) {
+//        this.password = password;
+//        return this;
+//    }
 
     public String getEmail() {
         return email;
@@ -113,14 +113,13 @@ public class UserRegistration implements Loggable {
         this.disableDate = disableDate;
     }
 
-    public Long getStorageQuota() {
-        return storageQuota;
-    }
-
-    public void setStorageQuota(Long storageQuota) {
-        this.storageQuota = storageQuota;
-    }
-    // endregion
+//    public Long getStorageQuota() {
+//        return storageQuota;
+//    }
+//
+//    public void setStorageQuota(Long storageQuota) {
+//        this.storageQuota = storageQuota;
+//    }
 
     @Override
     public String toString() {
@@ -135,4 +134,5 @@ public class UserRegistration implements Loggable {
     public String toMessage() {
         return username + " is " + status;
     }
+
 }
