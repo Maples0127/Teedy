@@ -83,7 +83,7 @@ public class UserRegistrationResource extends BaseResource {
     }
 
     @GET
-    @Path("pending")
+    @Path("/pending")
     public Response getPendingRequests() {
         if (!authenticate() || !hasBaseFunction(BaseFunction.ADMIN)) {
             throw new ForbiddenClientException();
