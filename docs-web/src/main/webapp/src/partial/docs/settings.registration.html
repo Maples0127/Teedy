@@ -1,0 +1,40 @@
+<!-- 注册请求列表（管理员视图） -->
+<div ng-controller="SettingsRegistrations">
+    <div ng-repeat="alert in alerts" class="alert alert-{{ alert.type }}">
+        <button type="button" class="close" ng-click="closeAlert($index)">&times;</button>
+        {{ alert.msg }}
+    </div>
+
+    <table class="table">
+        <tr ng-repeat="reg in registrations">
+            <td>{{ reg.username }}</td>
+            <td>{{ reg.email }}</td>
+            <td>{{ reg.create_date | date }}</td>
+            <td>
+                <button ng-if="reg.status === 'pending'"
+                        ng-click="processRequest(reg, true)"
+                        class="btn btn-success">
+                    {{ 'approve' | translate }}
+                </button>
+                <button ng-if="reg.status === 'pending'"
+                        ng-click="processRequest(reg, false)"
+                        class="btn btn-warning">
+                    {{ 'reject' | translate }}
+                </button>
+                <button ng-click="deleteRegistration(reg)"
+                        class="btn btn-danger">
+                    {{ 'delete' | translate }}
+                </button>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<!-- 访客注册表单（独立页面） -->
+<form name="registrationForm" ng-submit="submitRegistration()">
+    <input type="text" ng-model="user.username" required>
+    <input type="password" ng-model="user.password" required>
+    <input type="email" ng-model="user.email" required>
+    <input type="number" ng-model="user.storage_quota" required>
+    <button type="submit">{{ 'submit' | translate }}</button>
+</form>
