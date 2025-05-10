@@ -29,9 +29,7 @@ public class UserRegistrationResource extends BaseResource {
      * @api {put} /registration
      *
      * @param username User's registration name
-     * @param password Registration Password
      * @param email E-Mail
-     * @param storageQuotaStr User's storage quota
      * @return Response
      *
      */
@@ -39,9 +37,7 @@ public class UserRegistrationResource extends BaseResource {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response submitRequest(
             @FormParam("username") String username,
-            @FormParam("password") String password,
-            @FormParam("email") String email,
-            @FormParam("storage_quota") String storageQuotaStr){
+            @FormParam("email") String email){
 
         // 判断是否为guest创建
         if (!authenticate() || !principal.isGuest()) {
@@ -51,17 +47,13 @@ public class UserRegistrationResource extends BaseResource {
         // Validate input data
         username = ValidationUtil.validateLength(username, "username", 3, 50);
         ValidationUtil.validateUsername(username, "username");
-        password = ValidationUtil.validateLength(password, "password", 8, 50);
         email = ValidationUtil.validateLength(email, "email", 1, 100);
-        Long storageQuota = ValidationUtil.validateLong(storageQuotaStr, "storage_quota");
         ValidationUtil.validateEmail(email, "email");
 
         // Create registration request
         UserRegistration registration = new UserRegistration();
         registration.setUsername(username);
-//        registration.setPassword(password);
         registration.setEmail(email);
-//        registration.setStorageQuota(storageQuota);
         registration.setStatus("pending");
 
         UserRegistrationDao registrationDao = new UserRegistrationDao();
@@ -105,9 +97,6 @@ public class UserRegistrationResource extends BaseResource {
                     .add("id", userRegistration.getId())
                     .add("username", userRegistration.getUsername())
                     .add("email", userRegistration.getEmail())
-//                    .add("totp_enabled", userRequestDto.getTotpKey() != null)
-//                    .add("storage_quota", userRegistrationDto.getStorageQuota())
-//                    .add("storage_current", userRequestDto.getStorageCurrent())
                     .add("create_date", userRegistration.getCreateDate().toString())
                     .add("disabled", userRegistration.getDisableDate().toString() != null));
         }
@@ -179,28 +168,28 @@ public class UserRegistrationResource extends BaseResource {
                 .add("status", "ok");
         return Response.ok().entity(response.build()).build();
     }
-
-    @DELETE
-    @Path("/{username: [a-zA-Z0-9_@.-]+}")
-    public Response delete(@PathParam("username") String username) {
-        if (!authenticate()) {
-            throw new ForbiddenClientException();
-        }
-        checkBaseFunction(BaseFunction.ADMIN);
-
-        // Check that the user exists
-        UserRegistrationDao userRegistrationDao = new UserRegistrationDao();
-        UserRegistration userRegistration = userRegistrationDao.getUserRegistrationByURN(username);
-        if (userRegistration == null) {
-            throw new ClientException("UserNotFound", "The user does not exist");
-        }
-
-        // Delete the user
-        userRegistrationDao.delete(userRegistration.getUsername(), principal.getId());
-
-        // Always return OK
-        JsonObjectBuilder response = Json.createObjectBuilder()
-                .add("status", "ok");
-        return Response.ok().entity(response.build()).build();
-    }
+//
+//    @DELETE
+//    @Path("/{username: [a-zA-Z0-9_@.-]+}")
+//    public Response delete(@PathParam("username") String username) {
+//        if (!authenticate()) {
+//            throw new ForbiddenClientException();
+//        }
+//        checkBaseFunction(BaseFunction.ADMIN);
+//
+//        // Check that the user exists
+//        UserRegistrationDao userRegistrationDao = new UserRegistrationDao();
+//        UserRegistration userRegistration = userRegistrationDao.getUserRegistrationByURN(username);
+//        if (userRegistration == null) {
+//            throw new ClientException("UserNotFound", "The user does not exist");
+//        }
+//
+//        // Delete the user
+//        userRegistrationDao.delete(userRegistration.getUsername(), principal.getId());
+//
+//        // Always return OK
+//        JsonObjectBuilder response = Json.createObjectBuilder()
+//                .add("status", "ok");
+//        return Response.ok().entity(response.build()).build();
+//    }
 }
