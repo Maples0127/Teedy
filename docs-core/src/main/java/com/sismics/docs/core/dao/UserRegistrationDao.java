@@ -39,38 +39,11 @@ public class UserRegistrationDao {
         // 设置默认值（仿照UserDao.create()）
         userRegistration.setId(UUID.randomUUID().toString());
         userRegistration.setCreateDate(new Date());
-//        userRegistration.setPassword(userRegistration.getPassword());
-//        userRegistration.setStorageCurrent(0L);
         userRegistration.setStatus("pending");
 
         em.persist(userRegistration);
         return userRegistration.getId();
     }
-
-//    /**
-//     * 根据条件查询请求（仿照UserDao.findByCriteria()）
-//     */
-//    public List<UserRegistrationDto> findByCriteria(UserRegistrationCriteria criteria) {
-//        EntityManager em = ThreadLocalContext.get().getEntityManager();
-//        StringBuilder sb = new StringBuilder("select ur.URQ_ID_C, ur.URQ_USERNAME_C, ur.URQ_EMAIL_C, ur.URQ_CREATEDATE_D, ur.URQ_STATUS_C from T_USER_REQUEST ur");
-//
-//        // 构建查询条件...
-//
-//        Query query = em.createNativeQuery(sb.toString());
-//        List<Object[]> resultList = query.getResultList();
-//
-//        List<UserRegistrationDto> dtoList = new ArrayList<>();
-//        for (Object[] o : resultList) {
-//            UserRegistrationDto dto = new UserRegistrationDto();
-//            dto.setId((String) o[0]);
-//            dto.setUsername((String) o[1]);
-//            dto.setEmail((String) o[2]);
-//            dto.setCreateTimestamp(((Timestamp) o[3]).getTime());
-//            dto.setStatus((String) o[4]);
-//            dtoList.add(dto);
-//        }
-//        return dtoList;
-//    }
 
     /**
      * 根据条件查询请求（仿照UserDao.findByCriteria()）
@@ -153,42 +126,42 @@ public class UserRegistrationDao {
         }
     }
 
-    public void delete(String username, String id) {
-        EntityManager em = ThreadLocalContext.get().getEntityManager();
-
-        // Get the user
-        Query q = em.createQuery("select ur from UserRegistration ur where ur.username = :username and ur.deleteDate is null");
-        q.setParameter("username", username);
-        UserRegistration userRegistrationDb = (UserRegistration) q.getSingleResult();
-
-        // Delete the user
-        Date dateNow = new Date();
-        userRegistrationDb.setDeleteDate(dateNow);
-
-        // Create audit log
-        AuditLogUtil.create(userRegistrationDb, AuditLogType.DELETE, id);
-    }
-
-    public UserRegistration update(UserRegistration registration, String id) {
-        EntityManager em = ThreadLocalContext.get().getEntityManager();
-
-        // Get the user
-        Query q = em.createQuery("select u from User u where u.id = :id and u.deleteDate is null");
-        q.setParameter("id", registration.getId());
-        UserRegistration userRegistrationDb = (UserRegistration) q.getSingleResult();
-
-        // Update the user (except password)
-        userRegistrationDb.setEmail(registration.getEmail());
-//        userRegistrationDb.setStorageQuota(registration.getStorageQuota());
-//        userDb.setStorageCurrent(registration.getStorageCurrent());
-//        userDb.setTotpKey(registration.getTotpKey());
-        userRegistrationDb.setDisableDate(registration.getDisableDate());
-
-        // Create audit log
-        AuditLogUtil.create(userRegistrationDb, AuditLogType.UPDATE, id);
-
-        return registration;
-    }
+//    public void delete(String username, String id) {
+//        EntityManager em = ThreadLocalContext.get().getEntityManager();
+//
+//        // Get the user
+//        Query q = em.createQuery("select ur from UserRegistration ur where ur.username = :username and ur.deleteDate is null");
+//        q.setParameter("username", username);
+//        UserRegistration userRegistrationDb = (UserRegistration) q.getSingleResult();
+//
+//        // Delete the user
+//        Date dateNow = new Date();
+//        userRegistrationDb.setDeleteDate(dateNow);
+//
+//        // Create audit log
+//        AuditLogUtil.create(userRegistrationDb, AuditLogType.DELETE, id);
+//    }
+//
+//    public UserRegistration update(UserRegistration registration, String id) {
+//        EntityManager em = ThreadLocalContext.get().getEntityManager();
+//
+//        // Get the user
+//        Query q = em.createQuery("select u from User u where u.id = :id and u.deleteDate is null");
+//        q.setParameter("id", registration.getId());
+//        UserRegistration userRegistrationDb = (UserRegistration) q.getSingleResult();
+//
+//        // Update the user (except password)
+//        userRegistrationDb.setEmail(registration.getEmail());
+////        userRegistrationDb.setStorageQuota(registration.getStorageQuota());
+////        userDb.setStorageCurrent(registration.getStorageCurrent());
+////        userDb.setTotpKey(registration.getTotpKey());
+//        userRegistrationDb.setDisableDate(registration.getDisableDate());
+//
+//        // Create audit log
+//        AuditLogUtil.create(userRegistrationDb, AuditLogType.UPDATE, id);
+//
+//        return registration;
+//    }
 
 //    public UserRegistration updatePassword(UserRegistration registration, String id) {
 //        EntityManager em = ThreadLocalContext.get().getEntityManager();

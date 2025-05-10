@@ -112,9 +112,9 @@ public class UserRegistrationResource extends BaseResource {
     @Path("/approval/{username: [a-zA-Z0-9_@.-]+}")
     public Response processRequest(
             @PathParam("username") String userRegistrationName,
-            @FormParam("password") String password,
+//            @FormParam("password") String password,
             @FormParam("email") String email,
-            @FormParam("storage_quota") String storageQuotaStr,
+//            @FormParam("storage_quota") String storageQuotaStr,
             @FormParam("approve") Boolean approve) {
 
         if (!authenticate()) {
@@ -125,9 +125,9 @@ public class UserRegistrationResource extends BaseResource {
         // Validate the input data
         userRegistrationName = ValidationUtil.validateLength(userRegistrationName, "username", 3, 50);
         ValidationUtil.validateUsername(userRegistrationName, "username");
-        password = ValidationUtil.validateLength(password, "password", 8, 50);
+//        password = ValidationUtil.validateLength(password, "password", 8, 50);
         email = ValidationUtil.validateLength(email, "email", 1, 100);
-        Long storageQuota = ValidationUtil.validateLong(storageQuotaStr, "storage_quota");
+//        Long storageQuota = ValidationUtil.validateLong(storageQuotaStr, "storage_quota");
         ValidationUtil.validateEmail(email, "email");
 
         UserRegistrationDao registrationDao = new UserRegistrationDao();
@@ -136,6 +136,8 @@ public class UserRegistrationResource extends BaseResource {
             throw new ClientException("RequestNotFound", "Registration request not found");
         }
 
+        String password = "password";
+        Long storageQuota = 10000L;
 
         if (approve != null) {
             if (approve) {
