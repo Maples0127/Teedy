@@ -1,40 +1,78 @@
-<!-- 注册请求列表（管理员视图） -->
-<div ng-controller="SettingsRegistrations">
-    <div ng-repeat="alert in alerts" class="alert alert-{{ alert.type }}">
-        <button type="button" class="close" ng-click="closeAlert($index)">&times;</button>
-        {{ alert.msg }}
+<!-- 访客注册表单 -->
+<div ng-controller="SettingsRegistration">
+    <div ng-if="!user || user.role === 'guest'">
+        <h2 translate="registrations.submit_title"></h2>
+
+        <form class="form-horizontal" name="registrationForm" novalidate autocomplete="off" ng-submit="submitRegistration()">
+            <!-- 用户名 -->
+            <div class="form-group" ng-class="{ 'has-error': !registrationForm.username.$valid && registrationForm.$dirty }">
+                <label class="col-sm-2 control-label" for="inputRegistrationUsername">{{ 'settings.registration.username' | translate }}</label>
+                <div class="col-sm-7">
+                    <input type="text" name="registrationUsername" id="inputRegistrationUsername" class="form-control" required
+                           ng-pattern="/^[a-zA-Z0-9_@.-]*$/"
+                           ng-minlength="3" ng-maxlength="50" ng-attr-placeholder="{{ 'settings.registration.username' | translate }}"
+                           ng-model="registration.username"/>
+                </div>
+                <div class="col-sm-3">
+                    <span class="help-block" ng-show="registrationForm.username.$error.required" translate="validation.required"></span>
+                    <span class="help-block" ng-show="registrationForm.username.$error.pattern" translate="validation.alphanumeric"></span>
+                </div>
+            </div>
+
+            <!-- 邮箱 -->
+            <div class="form-group" ng-class="{ 'has-error': !registrationForm.email.$valid && registrationForm.$dirty }">
+                <label class="col-sm-2 control-label" for="inputEmail">{{ 'settings.registration.email' | translate }}</label>
+                <div class="col-sm-7">
+                    <input type="email" name="registrationEmail" id="inputEmail" required class="form-control"
+                           ng-minlength="1" ng-maxlength="100" ng-attr-placeholder="{{ 'settings.registration.email' | translate }}" ng-model="registration.email">
+                </div>
+                <div class="col-sm-3">
+                    <span class="help-block" ng-show="registrationForm.email.$error.email" translate="validation.email"></span>
+                </div>
+            </div>
+
+            <!-- 提交按钮 -->
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="btn btn-primary" ng-disabled="!registrationForm.$valid">
+                        <span class="fas fa-paper-plane"></span> {{ 'submit' | translate }}
+                    </button>
+                </div>
+            </div>
+        </form>
     </div>
 
-    <table class="table">
-        <tr ng-repeat="reg in registrations">
-            <td>{{ reg.username }}</td>
-            <td>{{ reg.email }}</td>
-            <td>{{ reg.create_date | date }}</td>
-            <td>
-                <button ng-if="reg.status === 'pending'"
-                        ng-click="processRequest(reg, true)"
-                        class="btn btn-success">
-                    {{ 'approve' | translate }}
-                </button>
-                <button ng-if="reg.status === 'pending'"
-                        ng-click="processRequest(reg, false)"
-                        class="btn btn-warning">
-                    {{ 'reject' | translate }}
-                </button>
-                <button ng-click="deleteRegistration(reg)"
-                        class="btn btn-danger">
-                    {{ 'delete' | translate }}
-                </button>
-            </td>
-        </tr>
-    </table>
-</div>
+    <!-- 管理员审批列表 -->
+    <div ng-if="user && user.role === 'admin'">
+        <h2 translate="registrations.pending_requests"></h2>
 
-<!-- 访客注册表单（独立页面） -->
-<form name="registrationForm" ng-submit="submitRegistration()">
-    <input type="text" ng-model="user.username" required>
-    <input type="password" ng-model="user.password" required>
-    <input type="email" ng-model="user.email" required>
-    <input type="number" ng-model="user.storage_quota" required>
-    <button type="submit">{{ 'submit' | translate }}</button>
-</form>
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th translate="username"></th>
+                <th translate="email"></th>
+                <th translate="created_at"></th>
+                <th translate="actions"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="req in registrations">
+                <td>{{ req.username }}</td>
+                <td>{{ req.email }}</td>
+                <td>{{ req.creation_date | date:'medium' }}</td>
+                <td>
+                    <button class="btn btn-success btn-xs" ng-click="processRequest(req, true)">
+                        <span class="fas fa-check" translate="approve"></span>
+                    </button>
+                    <button class="btn btn-danger btn-xs" ng-click="processRequest(req, false)">
+                        <span class="fas fa-times" translate="reject"></span>
+                    </button>
+                </td>
+            </tr>
+            <tr ng-if="!registrations.length">
+                <td colspan="4" class="text-muted" translate="registrations.no_pending"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
