@@ -49,42 +49,11 @@ angular.module('docs').controller('SettingsRegistration', function ($scope, Rest
      * @param {boolean} approve 是否批准
      */
     $scope.processRequest = function (registration, approve) {
-        let title, msg, btns;
-
-        if (approve) {
-            // 批准：弹出表单收集密码和配额
-            title = $translate.instant('registrations.approve_title');
-            msg = $translate.instant('registrations.approve_message');
-            btns = [
-                {result: 'cancel', label: $translate.instant('cancel')},
-                {result: 'ok', label: $translate.instant('confirm'), cssClass: 'btn-primary'}
-            ];
-
-            $dialog.dialog({
-                title: title,
-                message: msg,
-                inputs: [ // 表单字段
-                    {type: 'password', label: $translate.instant('password'), model: 'password', required: true},
-                    {type: 'number', label: $translate.instant('storage_quota'), model: 'storage_quota', required: true}
-                ],
-                buttons: btns
-            }).then(function (result) {
-                if (result === 'ok') {
-                    Restangular.one('registration/approval', registration.username).post('', {
-                        approve: true,
-                        password: result.inputs.password,
-                        storage_quota: result.inputs.storage_quota
-                    }).then(function () {
-                        $scope.loadRegistrations(); // 刷新列表
-                    });
-                }
-            });
-        } else {
-            // 拒绝：直接发送请求
-            Restangular.one('registration/approval', registration.username).post('', {approve: false})
-                .then(function () {
-                    $scope.loadRegistrations();
-                });
-        }
+        // 直接发送批准/拒绝请求
+        Restangular.one('registration/approval', registration.username).post('', {
+            approve: approve // 直接使用传入的布尔值
+        }).then(function () {
+            $scope.loadRegistrations(); // 刷新列表
+        });
     };
 });
