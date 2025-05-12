@@ -10,6 +10,7 @@ import com.sismics.util.context.ThreadLocalContext;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.sql.Timestamp;
@@ -28,7 +29,7 @@ public class UserRegistrationDao {
         Query q = em.createQuery("select ur from UserRegistration ur where ur.username = :username and ur.deleteDate is null");
         q.setParameter("username", userRegistration.getUsername());
         if (!q.getResultList().isEmpty()) {
-            throw new RuntimeException("AlreadyExistingUsernameInUserRegistration");
+            throw new Exception("AlreadyExistingUsername");
         }
         Query q1 = em.createQuery("select u from User u where u.username = :username and u.deleteDate is null");
         q1.setParameter("username", userRegistration.getUsername());
@@ -52,7 +53,9 @@ public class UserRegistrationDao {
         Map<String, Object> parameterMap = new HashMap<>();
         List<String> criteriaList = new ArrayList<>();
 
-        StringBuilder sb = new StringBuilder("SELECT ur.URQ_ID_C, ur.URQ_USERNAME_C, ur.URQ_EMAIL_C, ur.URQ_CREATEDATE_D, ur.URQ_STATUS_C FROM T_USER_REQUEST ur");
+        StringBuilder sb = new StringBuilder(
+                "SELECT ur.URQ_ID_C as c0, ur.URQ_USERNAME_C as c1, ur.URQ_EMAIL_C as c2, ur.URQ_CREATEDATE_D as c3, ur.URQ_STATUS_C as c4" +
+                        " FROM T_USER_REGISTRATION ur");
 
         // 添加搜索条件
         if (criteria.getSearch() != null) {
@@ -73,8 +76,7 @@ public class UserRegistrationDao {
 
         // 拼接WHERE子句
         if (!criteriaList.isEmpty()) {
-            sb.append(" WHERE ");
-            sb.append(String.join(" AND ", criteriaList));
+            sb.append(" WHERE ").append(String.join(" AND ", criteriaList));
         }
 
         // 处理排序
@@ -94,11 +96,18 @@ public class UserRegistrationDao {
             userRegistration.setUsername((String) o[i++]);
             userRegistration.setEmail((String) o[i++]);
             userRegistration.setCreateDate(((Date) o[i++]));
-            userRegistration.setStatus((String) o[i++]);
+            userRegistration.setStatus((String) o[i]);
             urList.add(userRegistration);
         }
         return urList;
     }
+
+//    public List<UserRegistration> getUserRegistrations() {
+//        EntityManager em = ThreadLocalContext.get().getEntityManager();
+//        TypedQuery<UserRegistration> q = em.createQuery("select ur from UserRegistration ur", UserRegistration.class);
+//        return q.getResultList();
+//    }
+
 
     /**
      * 更新请求状态（仿照UserDao.update()）
@@ -125,58 +134,4 @@ public class UserRegistrationDao {
             return null;
         }
     }
-
-//    public void delete(String username, String id) {
-//        EntityManager em = ThreadLocalContext.get().getEntityManager();
-//
-//        // Get the user
-//        Query q = em.createQuery("select ur from UserRegistration ur where ur.username = :username and ur.deleteDate is null");
-//        q.setParameter("username", username);
-//        UserRegistration userRegistrationDb = (UserRegistration) q.getSingleResult();
-//
-//        // Delete the user
-//        Date dateNow = new Date();
-//        userRegistrationDb.setDeleteDate(dateNow);
-//
-//        // Create audit log
-//        AuditLogUtil.create(userRegistrationDb, AuditLogType.DELETE, id);
-//    }
-//
-//    public UserRegistration update(UserRegistration registration, String id) {
-//        EntityManager em = ThreadLocalContext.get().getEntityManager();
-//
-//        // Get the user
-//        Query q = em.createQuery("select u from User u where u.id = :id and u.deleteDate is null");
-//        q.setParameter("id", registration.getId());
-//        UserRegistration userRegistrationDb = (UserRegistration) q.getSingleResult();
-//
-//        // Update the user (except password)
-//        userRegistrationDb.setEmail(registration.getEmail());
-////        userRegistrationDb.setStorageQuota(registration.getStorageQuota());
-////        userDb.setStorageCurrent(registration.getStorageCurrent());
-////        userDb.setTotpKey(registration.getTotpKey());
-//        userRegistrationDb.setDisableDate(registration.getDisableDate());
-//
-//        // Create audit log
-//        AuditLogUtil.create(userRegistrationDb, AuditLogType.UPDATE, id);
-//
-//        return registration;
-//    }
-
-//    public UserRegistration updatePassword(UserRegistration registration, String id) {
-//        EntityManager em = ThreadLocalContext.get().getEntityManager();
-//
-//        // Get the user
-//        Query q = em.createQuery("select u from User u where u.id = :id and u.deleteDate is null");
-//        q.setParameter("id", registration.getId());
-//        UserRegistration userRegistrationDb = (UserRegistration) q.getSingleResult();
-//
-//        // Update the user
-//        userRegistrationDb.setPassword(registration.getPassword());
-//
-//        // Create audit log
-//        AuditLogUtil.create(userRegistrationDb, AuditLogType.UPDATE, id);
-//
-//        return registration;
-//    }
 }

@@ -1,7 +1,10 @@
 package com.sismics.docs.core.model.jpa;
 
 import com.google.common.base.MoreObjects;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 import java.util.Date;
 
@@ -15,13 +18,12 @@ public class UserRegistration implements Loggable {
     @Column(name = "URQ_ID_C", length = 36)
     private String id;
 
-    @Column(name = "URQ_USERNAME_C", nullable = false, length = 50, unique = true)
+    @Column(name = "URQ_USERNAME_C", nullable = false, length = 50)
     private String username;
 
-    @Column(name = "URQ_EMAIL_C", length = 100)
+    @Column(name = "URQ_EMAIL_C", length = 100, nullable = false)
     private String email;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "URQ_STATUS_C", nullable = false, length = 20)
     private String status = "pending";
 
@@ -29,10 +31,10 @@ public class UserRegistration implements Loggable {
 //    @Temporal(TemporalType.TIMESTAMP)
     private Date createDate;
 
-    @Column(name = "URQ_DELETEDATE_D", nullable = false)
+    @Column(name = "URQ_DELETEDATE_D")
     private Date deleteDate;
 
-    @Column(name = "URQ_DISABLEDATE_D", nullable = false)
+    @Column(name = "URQ_DISABLEDATE_D")
     private Date disableDate;
 
     // region Getters/Setters

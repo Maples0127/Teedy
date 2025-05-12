@@ -1,16 +1,16 @@
 <!-- 访客注册表单 -->
-<div ng-controller="SettingsRegistration">
-    <div ng-if="!user || user.role === 'guest'">
-        <h2 translate="registrations.submit_title"></h2>
+<!--<div ng-controller="Registration">-->
+    <div ng-if="userInfo.username === 'guest'">
+        <h2 translate="registration.submit_title"></h2>
 
         <form class="form-horizontal" name="registrationForm" novalidate autocomplete="off" ng-submit="submitRegistration()">
             <!-- 用户名 -->
             <div class="form-group" ng-class="{ 'has-error': !registrationForm.username.$valid && registrationForm.$dirty }">
-                <label class="col-sm-2 control-label" for="inputRegistrationUsername">{{ 'settings.registration.username' | translate }}</label>
+                <label class="col-sm-2 control-label" for="inputRegistrationUsername">{{ 'registration.username' | translate }}</label>
                 <div class="col-sm-7">
-                    <input type="text" name="registrationUsername" id="inputRegistrationUsername" class="form-control" required
+                    <input type="text" name="username" id="inputRegistrationUsername" class="form-control" required
                            ng-pattern="/^[a-zA-Z0-9_@.-]*$/"
-                           ng-minlength="3" ng-maxlength="50" ng-attr-placeholder="{{ 'settings.registration.username' | translate }}"
+                           ng-minlength="3" ng-maxlength="50" ng-attr-placeholder="{{ 'registration.username' | translate }}"
                            ng-model="registration.username"/>
                 </div>
                 <div class="col-sm-3">
@@ -21,10 +21,10 @@
 
             <!-- 邮箱 -->
             <div class="form-group" ng-class="{ 'has-error': !registrationForm.email.$valid && registrationForm.$dirty }">
-                <label class="col-sm-2 control-label" for="inputEmail">{{ 'settings.registration.email' | translate }}</label>
+                <label class="col-sm-2 control-label" for="inputEmail">{{ 'registration.email' | translate }}</label>
                 <div class="col-sm-7">
-                    <input type="email" name="registrationEmail" id="inputEmail" required class="form-control"
-                           ng-minlength="1" ng-maxlength="100" ng-attr-placeholder="{{ 'settings.registration.email' | translate }}" ng-model="registration.email">
+                    <input type="email" name="email" id="inputEmail" required class="form-control"
+                           ng-minlength="1" ng-maxlength="100" ng-attr-placeholder="{{ 'registration.email' | translate }}" ng-model="registration.email">
                 </div>
                 <div class="col-sm-3">
                     <span class="help-block" ng-show="registrationForm.email.$error.email" translate="validation.email"></span>
@@ -35,7 +35,7 @@
             <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">
                     <button type="submit" class="btn btn-primary" ng-disabled="!registrationForm.$valid">
-                        <span class="fas fa-paper-plane"></span> {{ 'submit' | translate }}
+                        <span class="fas fa-paper-plane"></span> {{ 'registration.submit' | translate }}
                     </button>
                 </div>
             </div>
@@ -43,8 +43,8 @@
     </div>
 
     <!-- 管理员审批列表 -->
-    <div ng-if="user && user.role === 'admin'">
-        <h2 translate="registrations.pending_requests"></h2>
+    <div ng-show="userInfo.username === 'admin'">
+        <h2 translate="registration.pending_requests"></h2>
 
         <table class="table table-hover">
             <thead>
@@ -70,9 +70,9 @@
                 </td>
             </tr>
             <tr ng-if="!registrations.length">
-                <td colspan="4" class="text-muted" translate="registrations.no_pending"></td>
+                <td colspan="4" class="text-muted" translate="registration.no_pending"></td>
             </tr>
             </tbody>
         </table>
     </div>
-</div>
+<!--</div>-->

@@ -1876,6 +1876,9 @@ readers do not read off random characters that represent icons */
 .fa-power-off:before {
   content: "\f011"; }
 
+.fa-user-plus:before {
+  content: "\f234"; }
+
 .fa-print:before {
   content: "\f02f"; }
 

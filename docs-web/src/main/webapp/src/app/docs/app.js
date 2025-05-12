@@ -63,7 +63,15 @@ angular.module('docs',
           controller: 'TagEdit'
         }
       }
-    })
+    }).state('registration', {
+        url: '/registration',
+      views: {
+            'page': {
+                templateUrl: 'partial/docs/registration.html',
+                controller: 'Registration'
+            }
+      }
+  })
     .state('settings', {
       url: '/settings',
       abstract: true,
@@ -470,10 +478,10 @@ angular.module('docs',
     var param = function(obj) {
       var query = '';
       var name, value, fullSubName, subName, subValue, innerObj, i;
-      
+
       for(name in obj) {
         value = obj[name];
-        
+
         if(value instanceof Array) {
           for(i=0; i<value.length; ++i) {
             subValue = value[i];
@@ -495,10 +503,10 @@ angular.module('docs',
           query += encodeURIComponent(name) + '=' + encodeURIComponent(value) + '&';
         }
       }
-      
+
       return query.length ? query.substr(0, query.length - 1) : query;
     };
-    
+
     return angular.isObject(data) && String(data) !== '[object File]' ? param(data) : data;
   }];
 

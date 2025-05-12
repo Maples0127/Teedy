@@ -36,6 +36,7 @@
     "logged_as": "以 {{ username }}登录",
     "nav_settings": "设置",
     "logout": "退出",
+    "nav_register": "注册",
     "global_quota_warning": "<strong>提醒!</strong> 全球配额存储空间已经使用 {{ current | number: 0 }}MB 占总存储配额 {{ total | number: 0 }}MB 的 ({{ percent | number: 1 }}%)"
   },
   "document": {
@@ -233,6 +234,16 @@
       "title": "用户 & 群组",
       "message": "此处您可以浏览用户和群组信息."
     }
+  },
+  "registration": {
+    "submit_title": "新用户注册",
+    "registration_failed_title": "用户已存在",
+    "registration_failed_message": "该用户名已被占用",
+    "username": "用户名",
+    "email": "邮箱",
+    "submit": "注册",
+    "pending_requests": "待审批请求",
+    "no_pending": "暂无待审批请求"
   },
   "settings": {
     "menu_personal_settings": "个人设置",

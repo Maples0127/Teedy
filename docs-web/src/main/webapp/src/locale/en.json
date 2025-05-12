@@ -36,6 +36,7 @@
     "logged_as": "Logged in as {{ username }}",
     "nav_settings": "Settings",
     "logout": "Logout",
+    "nav_register": "Register",
     "global_quota_warning": "<strong>Warning!</strong> Global quota almost reached at {{ current | number: 0 }}MB ({{ percent | number: 1 }}%) used on {{ total | number: 0 }}MB"
   },
   "document": {

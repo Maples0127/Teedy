@@ -5,6 +5,7 @@ import com.sismics.docs.core.dao.*;
 import com.sismics.docs.core.dao.criteria.UserRegistrationCriteria;
 import com.sismics.docs.core.model.jpa.User;
 import com.sismics.docs.core.model.jpa.UserRegistration;
+import com.sismics.docs.core.util.jpa.SortCriteria;
 import com.sismics.docs.rest.constant.BaseFunction;
 import com.sismics.rest.exception.ClientException;
 import com.sismics.rest.exception.ForbiddenClientException;
@@ -61,7 +62,7 @@ public class UserRegistrationResource extends BaseResource {
             registrationDao.create(registration);
         } catch (Exception e) {
             if ("AlreadyExistingUsername".equals(e.getMessage())) {
-                throw new ClientException("AlreadyExistingUsername", "Login already used", e);
+                throw new ClientException("AlreadyExistingUsername", "Username already used", e);
             } else {
                 throw new ServerException("UnknownError", "Unknown server error", e);
             }
@@ -91,19 +92,20 @@ public class UserRegistrationResource extends BaseResource {
 //        SortCriteria sortCriteria = new SortCriteria(sortColumn, asc);
 
         UserRegistrationDao registrationDao = new UserRegistrationDao();
-        List<UserRegistration> requests = registrationDao.findByCriteria(new UserRegistrationCriteria(), null);
+        List<UserRegistration> requests = registrationDao.findByCriteria(new UserRegistrationCriteria(),new SortCriteria(null,null));
         for (UserRegistration userRegistration : requests) {
             userRequests.add(Json.createObjectBuilder()
                     .add("id", userRegistration.getId())
                     .add("username", userRegistration.getUsername())
                     .add("email", userRegistration.getEmail())
+                    .add("status", userRegistration.getStatus())
                     .add("create_date", userRegistration.getCreateDate().toString())
                     .add("disabled", userRegistration.getDisableDate().toString() != null));
         }
 
         // Build JSON response
         JsonObjectBuilder response = Json.createObjectBuilder()
-                .add("userRequests", userRequests);
+                .add("registrations", userRequests);
         return Response.ok().entity(response.build()).build();
     }
 
@@ -112,9 +114,7 @@ public class UserRegistrationResource extends BaseResource {
     @Path("/approval/{username: [a-zA-Z0-9_@.-]+}")
     public Response processRequest(
             @PathParam("username") String userRegistrationName,
-//            @FormParam("password") String password,
             @FormParam("email") String email,
-//            @FormParam("storage_quota") String storageQuotaStr,
             @FormParam("approve") Boolean approve) {
 
         if (!authenticate()) {
@@ -125,9 +125,7 @@ public class UserRegistrationResource extends BaseResource {
         // Validate the input data
         userRegistrationName = ValidationUtil.validateLength(userRegistrationName, "username", 3, 50);
         ValidationUtil.validateUsername(userRegistrationName, "username");
-//        password = ValidationUtil.validateLength(password, "password", 8, 50);
         email = ValidationUtil.validateLength(email, "email", 1, 100);
-//        Long storageQuota = ValidationUtil.validateLong(storageQuotaStr, "storage_quota");
         ValidationUtil.validateEmail(email, "email");
 
         UserRegistrationDao registrationDao = new UserRegistrationDao();
@@ -162,36 +160,10 @@ public class UserRegistrationResource extends BaseResource {
                 registration.setStatus("reject");
             }
         }
-//        registration = registrationDao.update(registration,principal.getId());
-
 
         // Always return OK
         JsonObjectBuilder response = Json.createObjectBuilder()
                 .add("status", "ok");
         return Response.ok().entity(response.build()).build();
     }
-//
-//    @DELETE
-//    @Path("/{username: [a-zA-Z0-9_@.-]+}")
-//    public Response delete(@PathParam("username") String username) {
-//        if (!authenticate()) {
-//            throw new ForbiddenClientException();
-//        }
-//        checkBaseFunction(BaseFunction.ADMIN);
-//
-//        // Check that the user exists
-//        UserRegistrationDao userRegistrationDao = new UserRegistrationDao();
-//        UserRegistration userRegistration = userRegistrationDao.getUserRegistrationByURN(username);
-//        if (userRegistration == null) {
-//            throw new ClientException("UserNotFound", "The user does not exist");
-//        }
-//
-//        // Delete the user
-//        userRegistrationDao.delete(userRegistration.getUsername(), principal.getId());
-//
-//        // Always return OK
-//        JsonObjectBuilder response = Json.createObjectBuilder()
-//                .add("status", "ok");
-//        return Response.ok().entity(response.build()).build();
-//    }
 }
