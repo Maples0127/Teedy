@@ -81,24 +81,24 @@ public class UserChatDao {
         sb.append(" from T_USER_CHAT uc ");
 
 
-
-        // Add search criterias
-        if (criteria.getSenderName() != null) {
-            criteriaList.add("uc.UCH_SENDER_NAME_C = :senderName");
+        // 主条件：发送者=A 且 接收者=B
+        if (criteria.getSenderName() != null && criteria.getReceiverName() != null) {
+            criteriaList.add("(uc.UCH_SENDER_NAME_C = :senderName AND uc.UCH_RECEIVER_NAME_C = :receiverName)");
             parameterMap.put("senderName", criteria.getSenderName());
-        }
-        if (criteria.getReceiverName() != null) {
-            criteriaList.add("uc.UCH_RECEIVER_NAME_C = :receiverName");
             parameterMap.put("receiverName", criteria.getReceiverName());
         }
+
+        // 组合条件：发送者=B 且 接收者=A（反向匹配）
         if (criteria.getCombinedCriteria() != null) {
-            criteriaList.add(" OR (uc.UCH_SENDER_NAME_C = :combinedSender AND uc.UCH_RECEIVER_NAME_C = :combinedReceiver)");
+            criteriaList.add("(uc.UCH_SENDER_NAME_C = :combinedSender AND uc.UCH_RECEIVER_NAME_C = :combinedReceiver)");
             parameterMap.put("combinedSender", criteria.getCombinedCriteria().getSenderName());
             parameterMap.put("combinedReceiver", criteria.getCombinedCriteria().getReceiverName());
         }
+
+        // 构建 WHERE 子句
         if (!criteriaList.isEmpty()) {
             sb.append(" where ");
-            sb.append(Joiner.on(" and ").join(criteriaList));
+            sb.append(Joiner.on(" OR ").join(criteriaList)); // 正确使用 OR 连接
         }
 
         QueryParam queryParam = QueryUtil.getSortedQueryParam(new QueryParam(sb.toString(), parameterMap), sortCriteria);

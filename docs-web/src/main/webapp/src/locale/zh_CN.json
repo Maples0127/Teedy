@@ -245,6 +245,9 @@
     "pending_requests": "待审批请求",
     "no_pending": "暂无待审批请求"
   },
+  "chat": {
+    
+  },
   "settings": {
     "menu_personal_settings": "个人设置",
     "menu_user_account": "用户帐号",

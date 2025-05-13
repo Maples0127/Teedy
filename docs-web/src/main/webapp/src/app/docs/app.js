@@ -63,15 +63,25 @@ angular.module('docs',
           controller: 'TagEdit'
         }
       }
-    }).state('registration', {
+    })
+      .state('registration', {
         url: '/registration',
-      views: {
-            'page': {
-                templateUrl: 'partial/docs/registration.html',
-                controller: 'Registration'
-            }
-      }
+          views: {
+                'page': {
+                    templateUrl: 'partial/docs/registration.html',
+                    controller: 'Registration'
+                }
+          }
   })
+      .state('chat', {
+        url: '/user/:username/chat',
+        views: {
+          'page': {
+            templateUrl: 'partial/docs/chat.html',
+            controller: 'UserChat'
+          }
+        }
+      })
     .state('settings', {
       url: '/settings',
       abstract: true,

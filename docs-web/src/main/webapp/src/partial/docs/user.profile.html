@@ -1,5 +1,8 @@
 <div class="page-header">
   <h1>{{ user.username }} <small>{{ user.email }}</small></h1>
+  <a href="#/user/{{ user.username }}/chat" class="btn btn-primary">
+    <i class="icon-comment"></i> {{ 'user.profile.chat' | translate }}
+  </a>
 </div>
 
 <h4 ng-if="user.groups.length > 0">{{ 'user.profile.groups' | translate }}</h4>

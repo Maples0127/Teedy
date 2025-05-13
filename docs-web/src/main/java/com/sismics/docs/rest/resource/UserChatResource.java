@@ -25,14 +25,14 @@ import java.util.List;
 /**
  * User chat REST resources.
  */
-@Path("/user/chat")
+@Path("/user")
 public class UserChatResource extends BaseResource {
     /**
      * 发送聊天消息
      * @api {post} /user/chat/:username 发送消息
      */
     @PUT
-    @Path("{username: [a-zA-Z0-9_@.-]+}")
+    @Path("{username: [a-zA-Z0-9_@.-]+}/chat")
 //    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response sendMessage(
             @PathParam("username") String username,
@@ -73,7 +73,7 @@ public class UserChatResource extends BaseResource {
      * @api {get} /user/chat/:username 获取聊天记录
      */
     @GET
-    @Path("{username: [a-zA-Z0-9_@.-]+}")
+    @Path("{username: [a-zA-Z0-9_@.-]+}/chat")
 //    @Produces(MediaType.APPLICATION_JSON)
     public Response getChatHistory(
             @PathParam("username") String targetUser) {
@@ -104,7 +104,7 @@ public class UserChatResource extends BaseResource {
         criteria.setCombinedCriteria(reverseCriteria);
 
         // 设置分页和排序
-        SortCriteria sortCriteria = new SortCriteria(5, null);
+        SortCriteria sortCriteria = new SortCriteria(4, null);
 
         // 执行查询
         UserChatDao userChatDao = new UserChatDao();
