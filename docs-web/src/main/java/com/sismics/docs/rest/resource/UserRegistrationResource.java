@@ -27,18 +27,16 @@ public class UserRegistrationResource extends BaseResource {
     /**
      * Create a user in guest model.
      *
-     * @api {put} /registration
-     *
      * @param username User's registration name
-     * @param email E-Mail
+     * @param email    E-Mail
      * @return Response
-     *
+     * @api {put} /registration
      */
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response submitRequest(
             @FormParam("username") String username,
-            @FormParam("email") String email){
+            @FormParam("email") String email) {
 
         // 判断是否为guest创建
         if (!authenticate() || !principal.isGuest()) {
@@ -78,9 +76,8 @@ public class UserRegistrationResource extends BaseResource {
     /**
      * Get all registrations.
      *
-     * @api {get} /registration
-     *
      * @return Response
+     * @api {get} /registration
      */
     @GET
     public Response getRegistrations() {
@@ -89,18 +86,15 @@ public class UserRegistrationResource extends BaseResource {
         }
 
         JsonArrayBuilder userRequests = Json.createArrayBuilder();
-//        SortCriteria sortCriteria = new SortCriteria(sortColumn, asc);
 
         UserRegistrationDao registrationDao = new UserRegistrationDao();
-        List<UserRegistration> requests = registrationDao.findByCriteria(new UserRegistrationCriteria(),new SortCriteria(null,null));
+        List<UserRegistration> requests = registrationDao.findByCriteria(new UserRegistrationCriteria(), new SortCriteria(null, null));
         for (UserRegistration userRegistration : requests) {
             userRequests.add(Json.createObjectBuilder()
                     .add("id", userRegistration.getId())
                     .add("username", userRegistration.getUsername())
                     .add("email", userRegistration.getEmail())
-                    .add("status", userRegistration.getStatus())
-                    .add("create_date", userRegistration.getCreateDate().toString())
-                    .add("disabled", userRegistration.getDisableDate().toString() != null));
+                    .add("status", userRegistration.getStatus()));
         }
 
         // Build JSON response
@@ -114,9 +108,7 @@ public class UserRegistrationResource extends BaseResource {
     @Path("/approval/{username: [a-zA-Z0-9_@.-]+}")
     public Response processRequest(
             @PathParam("username") String userRegistrationName,
-            @FormParam("email") String email,
             @FormParam("approve") Boolean approve) {
-
         if (!authenticate()) {
             throw new ForbiddenClientException();
         }
@@ -125,40 +117,41 @@ public class UserRegistrationResource extends BaseResource {
         // Validate the input data
         userRegistrationName = ValidationUtil.validateLength(userRegistrationName, "username", 3, 50);
         ValidationUtil.validateUsername(userRegistrationName, "username");
-        email = ValidationUtil.validateLength(email, "email", 1, 100);
-        ValidationUtil.validateEmail(email, "email");
 
         UserRegistrationDao registrationDao = new UserRegistrationDao();
         UserRegistration registration = registrationDao.getUserRegistrationByURN(userRegistrationName);
         if (registration == null) {
             throw new ClientException("RequestNotFound", "Registration request not found");
         }
-
+        String email = registration.getEmail();
         String password = "password";
         Long storageQuota = 10000L;
 
-        if (approve != null) {
-            if (approve) {
+        if (registration.getStatus().equals("pending")) {
+            if (approve != null) {
+                if (approve) {
 
-                registration.setStatus("accept");
-                // Create the actual user
-                User user = new User();
-                user.setRoleId(Constants.DEFAULT_USER_ROLE);
-                user.setUsername(userRegistrationName);
-                user.setPassword(password);
-                user.setEmail(email);
-                user.setStorageQuota(storageQuota);
-                user.setOnboarding(true);
+                    registration.setStatus("accept");
+                    // Create the actual user
+                    User user = new User();
+                    user.setRoleId(Constants.DEFAULT_USER_ROLE);
+                    user.setUsername(userRegistrationName);
+                    user.setPassword(password);
+                    user.setEmail(email);
+                    user.setStorageQuota(storageQuota);
+                    user.setOnboarding(true);
 
-                UserDao userDao = new UserDao();
-                try {
-                    userDao.create(user, principal.getId());
-                } catch (Exception e) {
-                    throw new ClientException("RegistrationError", "Error creating user");
+                    UserDao userDao = new UserDao();
+                    try {
+                        userDao.create(user, principal.getId());
+                    } catch (Exception e) {
+                        throw new ClientException("RegistrationError", "Error creating user");
+                    }
+                } else {
+                    registration.setStatus("reject");
                 }
-            } else {
-                registration.setStatus("reject");
             }
+
         }
 
         // Always return OK

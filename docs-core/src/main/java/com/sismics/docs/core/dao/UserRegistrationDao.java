@@ -26,7 +26,7 @@ public class UserRegistrationDao {
         EntityManager em = ThreadLocalContext.get().getEntityManager();
 
         // 检查用户名唯一性（仿照UserDao.create()）
-        Query q = em.createQuery("select ur from UserRegistration ur where ur.username = :username and ur.deleteDate is null");
+        Query q = em.createQuery("select ur from UserRegistration ur where ur.username = :username");
         q.setParameter("username", userRegistration.getUsername());
         if (!q.getResultList().isEmpty()) {
             throw new Exception("AlreadyExistingUsername");
@@ -39,7 +39,7 @@ public class UserRegistrationDao {
 
         // 设置默认值（仿照UserDao.create()）
         userRegistration.setId(UUID.randomUUID().toString());
-        userRegistration.setCreateDate(new Date());
+//        userRegistration.setCreateDate(new Date());
         userRegistration.setStatus("pending");
 
         em.persist(userRegistration);
@@ -54,7 +54,7 @@ public class UserRegistrationDao {
         List<String> criteriaList = new ArrayList<>();
 
         StringBuilder sb = new StringBuilder(
-                "SELECT ur.URQ_ID_C as c0, ur.URQ_USERNAME_C as c1, ur.URQ_EMAIL_C as c2, ur.URQ_CREATEDATE_D as c3, ur.URQ_STATUS_C as c4" +
+                "SELECT ur.URQ_ID_C as c0, ur.URQ_USERNAME_C as c1, ur.URQ_EMAIL_C as c2, ur.URQ_STATUS_C as c3" +
                         " FROM T_USER_REGISTRATION ur");
 
         // 添加搜索条件
@@ -72,7 +72,7 @@ public class UserRegistrationDao {
         }
 
         // 添加固定条件（例如：未被删除的记录，假设存在URQ_DELETEDATE_D字段）
-        criteriaList.add("ur.URQ_DELETEDATE_D IS NULL");
+        // criteriaList.add("ur.URQ_DELETEDATE_D IS NULL");
 
         // 拼接WHERE子句
         if (!criteriaList.isEmpty()) {
@@ -87,7 +87,6 @@ public class UserRegistrationDao {
         @SuppressWarnings("unchecked")
         List<Object[]> resultList = QueryUtil.getNativeQuery(queryParam).getResultList();
 
-        // 转换为DTO列表
         List<UserRegistration> urList = new ArrayList<>();
         for (Object[] o : resultList) {
             int i = 0;
@@ -95,7 +94,7 @@ public class UserRegistrationDao {
             userRegistration.setId((String) o[i++]);
             userRegistration.setUsername((String) o[i++]);
             userRegistration.setEmail((String) o[i++]);
-            userRegistration.setCreateDate(((Date) o[i++]));
+//            userRegistration.setCreateDate(((Date) o[i++]));
             userRegistration.setStatus((String) o[i]);
             urList.add(userRegistration);
         }
@@ -115,7 +114,7 @@ public class UserRegistrationDao {
     public UserRegistration updateStatus(UserRegistration userRegistration, String status) {
         EntityManager em = ThreadLocalContext.get().getEntityManager();
 
-        Query q = em.createQuery("select ur from UserRegistration ur where ur.username = :username and ur.deleteDate is null");
+        Query q = em.createQuery("select ur from UserRegistration ur where ur.username = :username");
         q.setParameter("username", userRegistration.getUsername());
         UserRegistration userRegistrationDb = (UserRegistration) q.getSingleResult();
 
@@ -127,7 +126,7 @@ public class UserRegistrationDao {
     public UserRegistration getUserRegistrationByURN(String userRegistrationName) {
         EntityManager em = ThreadLocalContext.get().getEntityManager();
         try {
-            Query q = em.createQuery("select ur from UserRegistration ur where ur.username = :username and ur.deleteDate is null");
+            Query q = em.createQuery("select ur from UserRegistration ur where ur.username = :username");
             q.setParameter("username", userRegistrationName);
             return (UserRegistration) q.getSingleResult();
         } catch (NoResultException e) {

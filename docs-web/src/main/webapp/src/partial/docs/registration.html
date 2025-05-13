@@ -51,7 +51,7 @@
             <tr>
                 <th translate="username"></th>
                 <th translate="email"></th>
-                <th translate="created_at"></th>
+                <th translate="status"></th>
                 <th translate="actions"></th>
             </tr>
             </thead>
@@ -59,7 +59,7 @@
             <tr ng-repeat="req in registrations">
                 <td>{{ req.username }}</td>
                 <td>{{ req.email }}</td>
-                <td>{{ req.creation_date | date:'medium' }}</td>
+                <td>{{ req.status }}</td>
                 <td>
                     <button class="btn btn-success btn-xs" ng-click="processRequest(req, true)">
                         <span class="fas fa-check" translate="approve"></span>

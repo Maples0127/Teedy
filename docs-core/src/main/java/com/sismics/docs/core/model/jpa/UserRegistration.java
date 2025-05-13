@@ -13,7 +13,7 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "T_USER_REGISTRATION")
-public class UserRegistration implements Loggable {
+public class UserRegistration {
     @Id
     @Column(name = "URQ_ID_C", length = 36)
     private String id;
@@ -27,15 +27,15 @@ public class UserRegistration implements Loggable {
     @Column(name = "URQ_STATUS_C", nullable = false, length = 20)
     private String status = "pending";
 
-    @Column(name = "URQ_CREATEDATE_D", nullable = false)
-//    @Temporal(TemporalType.TIMESTAMP)
-    private Date createDate;
-
-    @Column(name = "URQ_DELETEDATE_D")
-    private Date deleteDate;
-
-    @Column(name = "URQ_DISABLEDATE_D")
-    private Date disableDate;
+//    @Column(name = "URQ_CREATEDATE_D", nullable = false)
+////    @Temporal(TemporalType.TIMESTAMP)
+//    private Date createDate;
+//
+//    @Column(name = "URQ_DELETEDATE_D")
+//    private Date deleteDate;
+//
+//    @Column(name = "URQ_DISABLEDATE_D")
+//    private Date disableDate;
 
     // region Getters/Setters
     public String getId() {
@@ -74,31 +74,31 @@ public class UserRegistration implements Loggable {
         return this;
     }
 
-    public Date getCreateDate() {
-        return createDate;
-    }
-
-    public UserRegistration setCreateDate(Date createDate) {
-        this.createDate = createDate;
-        return this;
-    }
-
-
-    public Date getDeleteDate() {
-        return deleteDate;
-    }
-
-    public void setDeleteDate(Date deleteDate) {
-        this.deleteDate = deleteDate;
-    }
-
-    public Date getDisableDate() {
-        return disableDate;
-    }
-
-    public void setDisableDate(Date disableDate) {
-        this.disableDate = disableDate;
-    }
+//    public Date getCreateDate() {
+//        return createDate;
+//    }
+//
+//    public UserRegistration setCreateDate(Date createDate) {
+//        this.createDate = createDate;
+//        return this;
+//    }
+//
+//
+//    public Date getDeleteDate() {
+//        return deleteDate;
+//    }
+//
+//    public void setDeleteDate(Date deleteDate) {
+//        this.deleteDate = deleteDate;
+//    }
+//
+//    public Date getDisableDate() {
+//        return disableDate;
+//    }
+//
+//    public void setDisableDate(Date disableDate) {
+//        this.disableDate = disableDate;
+//    }
 
     @Override
     public String toString() {
@@ -108,10 +108,4 @@ public class UserRegistration implements Loggable {
                 .add("status", status)
                 .toString();
     }
-
-    @Override
-    public String toMessage() {
-        return username + " is " + status;
-    }
-
 }
